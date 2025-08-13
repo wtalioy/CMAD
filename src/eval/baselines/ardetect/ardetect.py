@@ -87,7 +87,7 @@ class ARDetect(Baseline):
                 pbar.set_description('epoch: %d, loss:%.3f'%(epoch, loss.item()))
                 pbar.update(1)
 
-    def train(self, train_data: List[np.ndarray], train_labels: np.ndarray, eval_data: List[np.ndarray], eval_labels: np.ndarray, dataset_name: str):
+    def train(self, train_data: List[np.ndarray], train_labels: List[Label], eval_data: List[np.ndarray], eval_labels: List[Label], dataset_name: str):
         args = self._load_train_config(os.path.dirname(__file__), dataset_name)
         train_real = self._load_features(train_data[train_labels == Label.real])
         train_fake = self._load_features(train_data[train_labels == Label.fake])
@@ -189,7 +189,7 @@ class ARDetect(Baseline):
     def evaluate(
         self,
         data: List[np.ndarray],
-        labels: np.ndarray,
+        labels: List[Label],
         metrics: List[str],
         sr: int,
         in_domain: bool = False,
@@ -226,7 +226,7 @@ class ARDetect(Baseline):
         return results
 
     @torch.inference_mode()
-    def _evaluate_eer(self, data: List[np.ndarray], labels: np.ndarray, fea_real: List[torch.Tensor], fea_fake: List[torch.Tensor], sr: int) -> float:
+    def _evaluate_eer(self, data: List[np.ndarray], labels: List[Label], fea_real: List[torch.Tensor], fea_fake: List[torch.Tensor], sr: int) -> float:
         scores = []
         for audio in tqdm(data, desc="Evaluating EER"):
             if sr != self.sample_rate:
@@ -246,7 +246,7 @@ class ARDetect(Baseline):
         return float(eer)
 
     @torch.inference_mode()
-    def _evaluate_auroc(self, data: List[np.ndarray], labels: np.ndarray, fea_real: List[torch.Tensor], fea_fake: List[torch.Tensor], sr: int) -> float:
+    def _evaluate_auroc(self, data: List[np.ndarray], labels: List[Label], fea_real: List[torch.Tensor], fea_fake: List[torch.Tensor], sr: int) -> float:
         scores = []
         for audio in tqdm(data, desc="Evaluating AUROC"):
             if sr != self.sample_rate:
